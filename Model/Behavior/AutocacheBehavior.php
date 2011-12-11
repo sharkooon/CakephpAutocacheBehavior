@@ -34,7 +34,7 @@ class AutocacheBehavior extends ModelBehavior {
          * @param Model $model
          * @param array $config 
          */
-        public function setup(&$model, $config = array()) {
+        public function setup(Model $model, $config = array()) {
                 
                 // > default - is the default cache name, which by default is the
                 // string "default" - confused?  You just need to make sure you
@@ -67,7 +67,7 @@ class AutocacheBehavior extends ModelBehavior {
          * @param Model $model
          * @param array $query 
          */
-        public function beforeFind(&$model, $query) {
+        public function beforeFind(Model $model, $query) {
                 
                 // Determine if we are even going to try using the cache
                 if (!isset($query['cache']) || $query['cache'] === false) {
@@ -99,7 +99,7 @@ class AutocacheBehavior extends ModelBehavior {
          * @param Model $model
          * @param array $results
          */
-        public function afterFind(&$model, $results) {
+        public function afterFind(Model $model, $results) {
                 
                 //debug($model);
                 //debug($results);
@@ -128,7 +128,7 @@ class AutocacheBehavior extends ModelBehavior {
          * @param Model $model
          * @param array $query 
          */
-        protected function _doCachingRuntimeSetup(&$model,&$query) {
+        protected function _doCachingRuntimeSetup(Model $model,&$query) {
                 
                 // Treat the cache config as a named cache config
                 if (is_string($query['cache'])) {
@@ -170,7 +170,7 @@ class AutocacheBehavior extends ModelBehavior {
          * @param Model $model 
          * @param array $query 
          */
-        protected function _generateCacheName(&$model, $query) {
+        protected function _generateCacheName(Model $model, $query) {
                 
                 if(isset($query['cache'])) {
                         unset($query['cache']);
