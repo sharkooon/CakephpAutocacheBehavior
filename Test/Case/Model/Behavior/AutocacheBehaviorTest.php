@@ -28,7 +28,7 @@ class AutocacheTestCase extends CakeTestCase {
 	 * @return void
 	 */
 	public function startTest() {
-		ConnectionManager::create('dummy', array('datasource' => 'Autocache.DummySource'));
+		ConnectionManager::create('autocache', array('datasource' => 'Autocache.AutocacheSource'));
 		Cache::config('default', array('engine'=>'File', 'path'=>TMP, 'duration'=>'+1 hour'));
 		Cache::clear();
 		//$this->DatabaseDb = ConnectionManager::getDataSource('default');
@@ -52,18 +52,24 @@ class AutocacheTestCase extends CakeTestCase {
 	public function testGetCached() {
 		$result = $this->Article->find('first', array('cache'=>true));
 		
-		echo (returns($result));
+		debug($result);
 		ob_flush();
 		$this->assertTrue(!empty($result));
 		$this->assertSame(1, $this->_queryCount());
 		
+		# check if filename starting with "cake_autocache_first_article_" exists
+		//TODO
+		
+		# get cached result - no additional db query
 		$result = $this->Article->find('first', array('cache'=>true));
 		$this->assertTrue(!empty($result));
 		$this->assertSame(1, $this->_queryCount());
+		
 	}
 	
 	/**
 	 * testGetCachedWithContainable
+	 * - Article JOIN User
 	 *
 	 * @return void
 	 */

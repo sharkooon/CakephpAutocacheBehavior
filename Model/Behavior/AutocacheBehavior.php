@@ -46,7 +46,7 @@ class AutocacheBehavior extends ModelBehavior {
 		// thinking they are caching when they are not - will throw a
 		// cache expection if fails this check
 		//
-		// > dummy - name of the dummy data source in the database.php file
+		// > autocache - name of the dummy data source in the database.php file
 		// should look something like this:-
 		// public $dummy = array('datasource' => 'DummySource');
 		// be sure you have a Model/Datasource/DummySource.php
@@ -54,8 +54,8 @@ class AutocacheBehavior extends ModelBehavior {
 		$this->runtime = array_merge(array(
 			'default_cache'     => 'default',   // default cache config name
 			'check_cache'       => true,        // check if the named cache config is loaded
-			'dummy_datasource'  => 'dummy',     // name of the dummy datasource config name
-		), (array )$config);
+			'dummy_datasource'  => 'autocache',     // name of the dummy datasource config name
+		), (array) $config);
 	}
 
 	/**

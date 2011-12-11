@@ -7,9 +7,9 @@
 ****************************************************************************/
 
 /**
- * DummySource
+ * AutocacheSource
  */
-class DummySource extends DataSource {
+class AutocacheSource extends DataSource {
 
 	/**
 	 * __construct
