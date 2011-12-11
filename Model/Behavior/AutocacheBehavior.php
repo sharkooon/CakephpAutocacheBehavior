@@ -48,7 +48,7 @@ class AutocacheBehavior extends ModelBehavior {
 		//
 		// > autocache - name of the dummy data source in the database.php file
 		// should look something like this:-
-		// public $dummy = array('datasource' => 'DummySource');
+		// public $autocache = array('datasource' => 'Autocache.AutocacheSource');
 		// be sure you have a Model/Datasource/DummySource.php
 
 		$this->runtime = array_merge(array(
