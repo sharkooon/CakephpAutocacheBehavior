@@ -20,7 +20,14 @@ class AutocacheTestCase extends CakeTestCase {
 	 *
 	 * @var array
 	 */
-	var $fixtures = array('core.article', 'core.user'); 
+	var $fixtures = array('core.Article', 'core.User'); 
+        
+        /**
+         * $cache_path - path location of the cache files
+         * 
+         * @var string
+         */
+        var $cache_path = null;
 
 	/**
 	 * startTest
@@ -28,11 +35,18 @@ class AutocacheTestCase extends CakeTestCase {
 	 * @return void
 	 */
 	public function startTest() {
-		ConnectionManager::create('autocache', array('datasource' => 'Autocache.AutocacheSource'));
-		Cache::config('default', array('engine'=>'File', 'path'=>TMP, 'duration'=>'+1 hour'));
-		Cache::clear();
-		//$this->DatabaseDb = ConnectionManager::getDataSource('default');
+                
+                $this->cache_path = CACHE . 'models' . DS;
+                
+		Cache::config('default', array(
+                    'prefix' => 'cake_',
+                    'engine'=>'File',
+                    'path' => $this->cache_path,
+                    'duration'=>'+1 hour'
+                ));
+                
 		$this->Article = ClassRegistry::init('Article');
+		$this->User = ClassRegistry::init('User');
 	}
 
 	/**
@@ -45,28 +59,116 @@ class AutocacheTestCase extends CakeTestCase {
 	}
 	
 	/**
-	 * testGetCached
+	 * testGetCachedTrue
 	 *
 	 * @return void
 	 */ 
-	public function testGetCached() {
-		$result = $this->Article->find('first', array('cache'=>true));
+	public function testGetCachedTrue() {
+                $cache = true;
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testGetCachedNamedConfigString
+	 *
+	 * @return void
+	 */ 
+	public function testGetCachedNamedConfigString() {
+                $cache = 'default';
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testGetCachedNamedConfig
+	 *
+	 * @return void
+	 */ 
+	public function testGetCachedNamedConfig() {
+                $cache = array('config'=>'default');
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testGetCachedNamedConfigName
+	 *
+	 * @return void
+	 */ 
+	public function testGetCachedNamedConfigName() {
+                $cache = array('name'=>'a_name_for_a_cache');
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testGetCachedNamedConfigNameAndConfig
+	 *
+	 * @return void
+	 */ 
+	public function testGetCachedNamedConfigNameAndConfig() {
+                $cache = array('config'=>'default','name'=>'a_name_for_a_cache');
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testFlushedCache
+	 *
+	 * @return void
+	 */ 
+	public function testFlushedCache() {
+                $cache = array('flush'=>true);
+                $this->_cacheTest($cache);
+	}
+        
+	/**
+	 * testFlushedCache
+	 *
+	 * @return void
+	 */ 
+	public function testFlushedWithConfig() {
+                $cache = array('config'=>'default','flush'=>true);
+                $this->_cacheTest($cache);
+	}
+        
+        /**
+         * _cacheTest
+         * 
+         * @param mixed $cache 
+         * @return void
+         */
+        protected function _cacheTest($cache) {
+                
+		Cache::clear();
+                
+		// First query gets cached
+                $result_1 = $this->Article->find('first', array('cache'=>$cache));
 		
-		debug($result);
-		ob_flush();
-		$this->assertTrue(!empty($result));
-		$this->assertSame(1, $this->_queryCount());
+		//debug($result_1);
+		//ob_flush();
+                
+		$this->assertTrue(!empty($result_1));
+		$this->assertFalse($this->Article->is_from_autocache);
 		
 		# check if filename starting with "cake_autocache_first_article_" exists
-		//TODO
+                $files = glob($this->cache_path.'cake_autocache_first_article_*');
+                if(is_array($cache) && isset($cache['name'])) {
+                        $files = glob($this->cache_path.'cake_'.$cache['name'].'*');
+                }
+                $this->assertTrue((1===count($files))); // always 1 because Cache::clear(); is used above
 		
-		# get cached result - no additional db query
-		$result = $this->Article->find('first', array('cache'=>true));
-		$this->assertTrue(!empty($result));
-		$this->assertSame(1, $this->_queryCount());
-		
-	}
-	
+		# Second query result should equal first query
+		$result_2 = $this->Article->find('first', array('cache'=>$cache));
+		$this->assertTrue(!empty($result_2));
+                
+                // Test result does not come from cache if flushed
+                if(isset($cache['flush']) && true === $cache['flush']) {
+                        $this->assertFalse($this->Article->is_from_autocache);
+                } else {
+                        $this->assertTrue($this->Article->is_from_autocache);
+                }
+                
+                // Check the first query result is the same as the second
+		$this->assertSame($result_1,$result_2);
+        }
+        
 	/**
 	 * testGetCachedWithContainable
 	 * - Article JOIN User
@@ -74,41 +176,34 @@ class AutocacheTestCase extends CakeTestCase {
 	 * @return void
 	 */
 	public function testGetCachedWithContainable() {
-		//TODO
+                
+		Cache::clear();
+                
+                $this->User->Behaviors->attach('Containable');
+                
+                $conditions = array(
+                    'contain' => array('Article'),
+                    'cache'=>true
+                );
+                
+                $result_1 = $this->User->find('first',$conditions);
+                
+		$this->assertTrue(!empty($result_1));
+		$this->assertFalse($this->User->is_from_autocache);
+                
+		# check if filename starting with "cake_autocache_first_article_" exists
+                $files = glob($this->cache_path.'cake_autocache_first_user_*');
+                $this->assertTrue((1===count($files))); // always 1 because Cache::clear(); is used above
+                
+		# Second query result should equal first query
+		$result_2 = $this->User->find('first',$conditions);
+		$this->assertTrue(!empty($result_2));
+                
+                $this->assertTrue($this->User->is_from_autocache);
+                
+                // Check the first query result is the same as the second
+		$this->assertSame($result_1,$result_2);
 	}
-
-
-
-
-	/**
-	 * return all queries
-	 *
-	 * @return array
-	 * @access protected
-	 */
-	protected function _queries() {
-		$res = $this->db->getLog(false, false);
-		$queries = $res['log'];
-		$return = array();
-		foreach ($queries as $row) {
-			if (strpos($row['query'], 'DESCRIBE') === 0) {
-				continue;
-			}
-			$return[] = $row['query'];
-		}
-		return $return;
-	}
-
-	/**
-	 * return number of queries executed
-	 *
-	 * @return int
-	 * @access protected
-	 */
-	protected function _queryCount() {
-		return count($this->_queries());
-	}
-	
 }
 
 
@@ -123,8 +218,19 @@ class User extends CakeTestModel {
 	 *
 	 * @var array
 	 */
-	public $actsAs = array('Autocache.Autocache');
-	
+	public $actsAs = array('Autocache');
+        
+        /**
+         * hasMany associations
+         *
+         * @var array
+         */
+        public $hasMany = array(
+            'Article' => array(
+                'className' => 'Article',
+                'foreignKey' => 'user_id',
+            )
+        );
 }
 
 
@@ -139,6 +245,6 @@ class Article extends CakeTestModel {
 	 *
 	 * @var array
 	 */
-	public $actsAs = array('Autocache.Autocache');
+	public $actsAs = array('Autocache');
 
 }

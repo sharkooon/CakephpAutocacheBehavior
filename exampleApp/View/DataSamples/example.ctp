@@ -1,4 +1,5 @@
-<?php
+<h2>Contents of the $cache array</h2>
+<?php debug($cache); ?>
 
-debug($cache);
-debug($data);
+<h2>Contents of the $data array</h2>
+<?php debug($data); ?>

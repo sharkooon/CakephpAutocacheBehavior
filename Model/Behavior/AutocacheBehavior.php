@@ -4,6 +4,9 @@
 * Cakephp AutocacheBehavior
 * Nicholas de Jong - http://nicholasdejong.com - https://github.com/ndejong
 * 26 November 2011
+* 
+* @author Nicholas de Jong
+* @copyright Nicholas de Jong
 ****************************************************************************/
 
 class AutocacheBehavior extends ModelBehavior {
@@ -36,25 +39,26 @@ class AutocacheBehavior extends ModelBehavior {
 	 * @param array $config 
 	 */
 	public function setup(Model $model, $config = array()) {
-		// > default - is the default cache name, which by default is the
-		// string "default" - confused?  You just need to make sure you
-		// have an appropriate Cache::config('default',array(...)) in your
-		// bootstrap.php or core.php
+                
+		// > default_cache - is the default cache name, which by default 
+                // is the string "default" - confused?  You just need to make sure 
+                // you have an appropriate Cache::config('default',array(...)) in 
+                // your bootstrap.php or core.php
 		//
-		// > check - determines if we bother checking if the supplied
+		// > check_cache - determines if we bother checking if the supplied
 		// cache configuration name is valid - prevents the developer
 		// thinking they are caching when they are not - will throw a
 		// cache expection if fails this check
 		//
-		// > autocache - name of the dummy data source in the database.php file
-		// should look something like this:-
-		// public $autocache = array('datasource' => 'Autocache.AutocacheSource');
-		// be sure you have a Model/Datasource/DummySource.php
+		// > dummy_datasource - name of the dummy data source in the 
+                // database.php file should look something like this:-
+		// public $autocache = array('datasource' => 'AutocacheSource');
+		// be sure you have Model/Datasource/AutocacheSource.php in place!
 
 		$this->runtime = array_merge(array(
 			'default_cache'     => 'default',   // default cache config name
 			'check_cache'       => true,        // check if the named cache config is loaded
-			'dummy_datasource'  => 'autocache',     // name of the dummy datasource config name
+			'dummy_datasource'  => 'autocache', // name of the autocache dummy datasource config name
 		), (array) $config);
 	}
 
@@ -70,6 +74,10 @@ class AutocacheBehavior extends ModelBehavior {
 		if (!isset($query['cache']) || $query['cache'] === false) {
 			return true; // return early as we have nothing to do
 		}
+                
+                // Provides a place in the Model that we can use to find out what 
+                // autocache did on the last query
+                $model->is_from_autocache = false;
 
 		// Do the required cache query setup
 		$this->_doCachingRuntimeSetup($model, $query);
@@ -106,6 +114,11 @@ class AutocacheBehavior extends ModelBehavior {
 
 			// reset the useDbConfig attribute back to what it was
 			$model->useDbConfig = $this->runtime['useDbConfig'];
+                        
+                        // A flag to indicate in the Model if the last query was from cache
+                        if($this->cached_results) {
+                                $model->is_from_autocache = true;
+                        }
 
 			// return the cached results
 			return $this->cached_results;
@@ -174,7 +187,7 @@ class AutocacheBehavior extends ModelBehavior {
 		}
 
 		// NOTE #1: we include the SERVER_NAME as a part of the generated
-		// name since it is possible to have more than one CahePHP site
+		// name since it is possible to have more than one CakePHP site
 		// running on the same webserver and thus it possible to have
 		// the same query among them - learnt this the hard way - NdJ
 
@@ -193,9 +206,8 @@ class AutocacheBehavior extends ModelBehavior {
 			Cache::delete($this->runtime['name'], $this->runtime['config']);
 			$this->cached_results = false;
 		}
-
+                
 		// Catch the cached result
 		$this->cached_results = Cache::read($this->runtime['name'], $this->runtime['config']);
 	}
-
 }

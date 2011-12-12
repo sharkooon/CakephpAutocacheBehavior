@@ -10,7 +10,7 @@ echo $this->Html->link("cache = 'default'",array('action'=>'example_c')).' << th
 
 echo $this->Html->link("cache => array('config'=>'default')",array('action'=>'example_d')).' << same as example_c above<br />';
 
-echo $this->Html->link("cache => array('config'=>'foobar')",array('action'=>'example_e')).'<< expected error because no cache defined by the name "foobar"<br />';
+echo $this->Html->link("cache => array('config'=>'foobar')",array('action'=>'example_e')).'<< <span style="color:red">an expected error</span> because there is no cache defined by the name "foobar"<br />';
 
 echo $this->Html->link("cache => array('name'=>'a_name_for_a_cache')",array('action'=>'example_f')).' << note the expected, but (probably) undesireable effect when using the same name for a cache on different queries - if you allow Autocache to choose a name for you it resolves the duplicate name problem since Autocache will pick a unique cache name per query<br />';
 

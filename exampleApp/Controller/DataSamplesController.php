@@ -28,7 +28,7 @@ class DataSamplesController extends AppController {
                 $this->DataSample->Behaviors->attach('Autocache',array(
                     'default_cache'     => 'default',   // default cache config name
                     'check_cache'       => true,        // check if the named cache config is loaded
-                    'dummy_datasource'  => 'dummy',     // name of the dummy datasource config name
+                    'dummy_datasource'  => 'autocache', // name of the autocache dummy datasource config name
                 ));
                 **/
                 

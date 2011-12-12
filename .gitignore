@@ -1,0 +1,8 @@
+/nbproject/
+/exampleApp/tmp/cache/models/*
+/exampleApp/tmp/cache/persistent/*
+/exampleApp/tmp/cache/views/*
+/exampleApp/tmp/cache/cake_*
+/exampleApp/tmp/logs/*
+/exampleApp/tmp/sessions/*
+/exampleApp/tmp/tests/*

@@ -16,8 +16,21 @@
  * @since         CakePHP(tm) v 1.2.0.4433
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
 set_time_limit(0);
 ini_set('display_errors', 1);
+
+/**
+ * CHANGE THIS VALUE TO SUIT YOUR CAKEPHP INSTALL
+ * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+ */
+define('CAKE_CORE_INCLUDE_PATH','/usr/local/cakephp2/lib');
+/**
+ * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ * CHANGE THIS VALUE TO SUIT YOUR CAKEPHP INSTALL
+ */
+
+
 /**
  * Use the DS to separate the directories in other defines
  */

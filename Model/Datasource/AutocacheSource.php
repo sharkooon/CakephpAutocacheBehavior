@@ -4,6 +4,9 @@
 * Cakephp AutocacheBehavior
 * Nicholas de Jong - http://nicholasdejong.com - https://github.com/ndejong
 * 26 November 2011
+* 
+* @author Nicholas de Jong
+* @copyright Nicholas de Jong
 ****************************************************************************/
 
 /**
