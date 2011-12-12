@@ -230,7 +230,7 @@ if (isset($MYREQUEST['IMG']))
 		exit(0);
 	}
 
-	function fill_arc($im, $centerX, $centerY, $diameter, $start, $end, $color1,$color2,$text='',$placeindex=0) {
+	public function fill_arc($im, $centerX, $centerY, $diameter, $start, $end, $color1,$color2,$text='',$placeindex=0) {
 		$r=$diameter/2;
 		$w=deg2rad((360+$start+($end-$start)/2)%360);
 
@@ -259,7 +259,7 @@ if (isset($MYREQUEST['IMG']))
 		}
 	} 
 
-	function text_arc($im, $centerX, $centerY, $diameter, $start, $end, $color1,$text,$placeindex=0) {
+	public function text_arc($im, $centerX, $centerY, $diameter, $start, $end, $color1,$text,$placeindex=0) {
 		$r=$diameter/2;
 		$w=deg2rad((360+$start+($end-$start)/2)%360);
 
@@ -272,7 +272,7 @@ if (isset($MYREQUEST['IMG']))
 		}
 	} 
 	
-	function fill_box($im, $x, $y, $w, $h, $color1, $color2,$text='',$placeindex='') {
+	public function fill_box($im, $x, $y, $w, $h, $color1, $color2,$text='',$placeindex='') {
 		global $col_black;
 		$x1=$x+$w-1;
 		$y1=$y+$h-1;
